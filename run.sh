@@ -71,7 +71,7 @@ PY
     echo
     echo "== cron jobs (names only; best-effort, interactive only) =="
     # This is for interactive/manual runs only; scheduled runs must not call openclaw.
-    openclaw cron list --json 2>/dev/null | python3 - <<'PY'
+    timeout 3s openclaw cron list --json 2>/dev/null | python3 - <<'PY'
 import json,sys
 try:
   j=json.load(sys.stdin)
