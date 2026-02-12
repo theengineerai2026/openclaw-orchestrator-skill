@@ -12,8 +12,9 @@ This skill manages the self-driving goal orchestrator that lives under:
 Commands provided by this skill:
 
 - `orchestrator.status` — show current goals + schedules overview
-- `orchestrator.install` — create/repair folders + cron jobs
-- `orchestrator.run_once` — run a single orchestrator reconciliation cycle now (no schedule changes outside OpenClaw)
+- `orchestrator.install` — create/repair required folders + baseline files under `workspace/goals/`
+- `orchestrator.run_once` — run a lightweight, single reconciliation cycle now (updates `goals/state.json` + regenerates `goals/index.md`)
+- `orchestrator.validate` — validate orchestrator health (checks `state.json` structure + file writability)
 
 ## Notes
 
