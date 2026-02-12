@@ -71,18 +71,23 @@ PY
     echo
     echo "== cron jobs (names only; best-effort, interactive only) =="
     # This is for interactive/manual runs only; scheduled runs must not call openclaw.
-    timeout 3s openclaw cron list --json 2>/dev/null | python3 - <<'PY'
+    if timeout 3s openclaw cron list --json 2>/dev/null | python3 - <<'PY'
 import json,sys
 try:
   j=json.load(sys.stdin)
 except Exception:
-  print('(cron list unavailable)')
-  raise SystemExit(0)
+  # swallow parse errors (e.g., timeout/no output)
+  raise SystemExit(1)
 for job in j.get('jobs',[]) or []:
   name=job.get('name')
   enabled=job.get('enabled')
   print(f"- {name} ({'enabled' if enabled else 'disabled'})")
 PY
+    then
+      :
+    else
+      echo '(cron list unavailable)'
+    fi
     ;;
 
   orchestrator.install)
@@ -179,7 +184,7 @@ print('OK')
 PY
     ;;
 
-  orchestrator.validate)
+  orchestrator.validate|orchestrator.validate_health)
     ensure_base_files
     python3 - <<'PY'
 import json
@@ -229,7 +234,7 @@ PY
 
   *)
     echo "Usage: $0 <action>"
-    echo "Actions: orchestrator.status | orchestrator.install | orchestrator.run_once | orchestrator.validate"
+    echo "Actions: orchestrator.status | orchestrator.install | orchestrator.run_once | orchestrator.validate | orchestrator.validate_health"
     exit 1
     ;;
 esac
